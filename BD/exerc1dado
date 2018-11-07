@@ -1,0 +1,135 @@
+DROP TABLE departamento;
+DROP TABLE deploc;
+DROP TABLE dependente;
+DROP TABLE trabalhano;
+DROP TABLE projeto;
+DROP TABLE empregado;
+
+Create table departamento(
+	num varchar(100) not null,
+	nome character varying(100)not null,
+	--identeger 	references ________(_____),
+	PRIMARY KEY (num)
+);
+
+
+Create Table empregado (
+	identidade char(10) NOT NULL,
+	nome character varying(100) NOT NULL,
+	salario float NOT NULL,
+	endereço varchar(1000) NOT NULL,
+	genero char(1) NOT NULL DEFAULT 'M' CHECK ((genero = 'M') OR (genero = 'F')),
+	nascimento DATE NOT NULL CHECK (nascimento <= NOW()),
+	depnum char(10) not null references departamento(num),
+	superident character varying(100) NOT NULL,
+	PRIMARY KEY (identidade)
+);
+
+insert into empregado values ('1234567891', 'Betito', 200.00,'Bacon Landy','M', '10/4/1950', '1', 'Bacon'); 
+
+
+insert into departamento values ('1','Lanche');
+
+Create table projeto(
+ 	num varchar(10) not null,
+	nome character varying(100)not null,
+	loc varchar(1000) not null,
+	depnum character varying (15) not null references departamento(num),
+	PRIMARY KEY (num)
+);
+
+insert into projeto values ('10','omega','instalação Add','1');
+
+Create Table trabalhano(
+	identemp varchar(50) not null references empregado(identidade),
+	projnum varchar(10) not null references projeto(num),
+	hrs char(8) not null,
+	PRIMARY KEY(identemp, projnum )
+);
+
+insert into trabalhano values ('1234567891', '10', '08:00:00');
+
+
+CREATE TABLE dependente(
+	nome character varying(40) not null,
+	genero char(1) NOT NULL DEFAULT 'M' CHECK ((genero = 'M') OR (genero = 'F')),
+	nascimento DATE NOT NULL CHECK (nascimento <= NOW()),
+	parentesco character varying(100) not null,
+	identemp varchar(100) not null references empregado(identidade),
+	PRIMARY KEY(nome, identemp)
+);
+
+insert into dependente values ('Juninho','M','10/6/2000','Xuxa','1234567891');
+
+create table deploc(
+	depnum varchar(10) not null references departamento(num),
+	loc varchar(100) not null,
+	PRIMARY KEY (loc,depnum)
+);
+
+insert into deploc values ('1','Rua Santo Desastre 666');
+
+
+
+
+--ALTER TABLE ONLY dependente
+--	ADD CONTRAINT dependete_pkey PRIMARY KEY (codigo);
+
+--ALTER TABLE ONLY funcionario
+--	ADD CONTRAINT funcionario_pkey PRIMARY KEY (codigo);
+
+--ALTER TABLE ONLY dependente
+--	ADD CONTRAINT dependente_funcionario_fkey FOREIGN KEY (funcionario)
+--REFERENCES funcionario(codigo);
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

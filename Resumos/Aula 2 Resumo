@@ -1,0 +1,273 @@
+select * from produto where descricao like '%pavillion%'   (qualquer coisa antes e depois de pavillion importa se é M ou m)
+select * from produto where descricao ilike '%pavillion%'   (qualquer coisa antes e depois de pavillion independente de M e m)
+
+select * from produto where descricao like '%HD';	   (qualquer produto que termina com HD)
+select * from produto where descricao like 'HD%';	   (qualquer produto que começa com HD)
+select * from produto where descricao like 'HD %';	   (qualquer produto que começa com sómente HD)
+
+select * from produto where descricao like 'HD % 500%GB%';     (sómente HD de 500 G)
+
+select * from produto where descricao like '%HD % 500%GB%';	(nesse caso pq tem NB antes)
+
+select * from produto where descricao like '%HD % 500%GB%MAXTOR%';
+
+select * from produto where (lower(descricao) like '%hd %maxtor%');
+
+select * from produto where (descricao like upper('%hd %maxtor%'));
+
+select * from produto where (upper(descricao) like upper('%hd %maxtor%');
+
+select * from produto where descricao ilike '%hd %maxtor%'); ------------
+
+
+	      +--------------+
+palavra chave |  hd maxtor   |
+              +--------------+
+
+select * from produto where descricao like '%'||replayce('hd maxtor',' ','%')||'%';   
+
+select count(*) from produto where descricao like 'HD %500%';   (relatorio gerencial renomear campo pra aparecer quantidade)
+
+slect count(*) from programa;       (numericamente todos canais quant)
+
+
+-------------------------------------BANCO 1----------------------------------------
+
+slect count(*) from programa where canal = 'PLA';
+
+select * from programa where programa = 'PLA';        (todos)
+select count(*) from programa where programa = 'PLA'; (quantos)
+select count(distinct nome) from programa where programa = 'PLA';  (unicos canais sem repetir)
+
+------------------------------------------------------------------------------------
+
+NAVENET
+
+select preco from produto where descricao like 'HD %MAXTOR%' order by preco asc limit 1.  (a mais barata)
+
+select min(preco) from produto where descricao like 'HD %MAXTOR%'; (msm coisa ^)
+select max(preco) from produto where descricao like 'HD %MAXTOR%'; (mais caro)
+
+
+select min(preco) as menos_preco from produto where descricao like 'HD %MAXTOR%';
+select max(preco) as maior_preco from produto where descricao like 'HD %MAXTOR%';
+select avg(preco) as preco_medio from produto where descricao like 'HD %MAXTOR%';
+
+
+		(todas HD Maxtor com menor preço)  (pega todas HD maxtor e que tem o msm preço da menor HD)
+select *						<-	sub select coluna
+	from produto					<-	sub select tabela
+	where						<-	sub select variavel(?)
+	     (descricao like 'HD %MAXTOR%') and
+	     (preco = (select min(preco)
+			 from produto
+			 where descricao like 'HD %MAXTOR%');
+
+
+Selecionar todas variaves
+		do produto
+		onde
+		são iguais a HD Maxtor e
+		preço seja igual ao minimo
+			do produto
+			HD Maxtor.
+
+select * from produto where (descricao like 'HD %MAXTOR%') and (preco = (select min(preco) from produto where descricao
+like 'HD %MAXTOR%');
+
+
+mostrar as pilhas cujo preço é inferior ao preço médio das pilhas
+
+select * from produto where (descricao like '%PILHAS%') and (preco < (select avg(preco) from produto where 
+descricao like '%PILHAS%'));
+
+
+select *
+	from
+	    (select *
+		    from produto
+		    where descricao like 'HD %MAXTOR%')as tmp1
+	     where preco <30;
+
+
+		(mostra a ou as com preço minimo(s) media e maximo //pode ter duas com msm preço)
+select
+    (select min(preco)
+	 from produto 
+	 where descricao like 'HD %MAXTOR%') as minimo,
+    (select avg(preco)
+	 from produto 
+	 where descricao like 'HD %MAXTOR%') as media,
+    (select max(preco)
+	 from produto 
+	 where descricao like 'HD %MAXTOR%') as maximo;
+
+
+--------------------------------------------------------------------------------------------------------
+
+Banco Ing
+
+select * from deposito where saldo between 900 and 1000;
+select * from deposito where (saldo >= 900) and ( saldo <= 1000);
+
+select * from deposito where saldo not between 900 and 1000; 
+select * from deposito where not ((saldo >= 900) and ( saldo <= 1000));
+select * from deposito where (saldo < 900) and ( saldo > 1000);
+
+
+select distinct nome_agencia from deposito;   (listar o nome das agencias que possuem contas)
+
+select nome_agencia from deposito group by nome_agencia; (msm coisa ^) 
+
++------ Group By ----------+ 
+|msm função que o distinct |  
++--------------------------+
+
+select nome_agencia,count(*) as quantidade from deposito group by nome_agencia; (separa em grupos e mostra a quantidade de gp
+										 com o msm nome)
+
+					( tem como por desc e asc ou sem nenhum)
+select nome_agencia,count(*) as quantidade from deposito group by nome_agencia order by quantidade desc;
+
+
+select nome_agencia,avg(saldo) as media from deposito group by nome_agencia; 
+
+
+insert into deposito values ('Downtown',999,'Johnson',550);
+
+select nome_agencia, count(distinct nome_cliente) from deposito group by nome_agencia; (quantos cliente distintos kd agencia tem)
+
+
+select nome_agencia, count(*) as quantidade from deposito group by nome_agencia;
+
+select nome_agencia, count(*) as quantidade from (select deposito where quantidade >= 2 group by nome_agencia)
+as tmp1 where quantidade >=2;
+
++------ Having --------+ 
+|é o where do group by |  
++----------------------+
+
+
+select nome_agencia, count(*) as quantidade from deposito group by nome_agencia having count(*) >= 2;
+
+mostrar o nome das agencias com o saldo total maior que 2000
+
+select nome_agencia,sum(saldo) as total from deposito group by nome_agencia having sum(saldo) >= 1000;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

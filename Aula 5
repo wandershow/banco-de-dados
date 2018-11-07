@@ -1,0 +1,141 @@
+--------------------------------------------------------------------------------------------------------------
+	THETA JOIN--------Resultado das 2 primeiras em uma nova (?)
+			  							
+	select *          
+		from tabela1, tabela2
+		where tabela1.campoa = tabela2.campoc;
+
+SELECT title, last_name, first_name
+FROM book AS b, authors AS a;
+WHERE b.author_id = a.authors_id;
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------
+
+			  				
+			  				
+	CROSS JOIN--------Diferença de uma palavra e virgula
+	                  
+	select *          
+		from tabela1 cross join tabela2
+		where tabela1.campoa = tabela2.campoc;		
+	                  
+SELECT title, last_name, first_name
+FROM books CROSS JOIN authors
+WHERE books.author_id = authors.author_id;
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------
+		          
+	INNER JOIN--------Tira o where e coloca on   é um intersecção ( mostra os funcionarios que tem dependendte)
+
+       +---------------------------------------------------------------------------+
+       |select *								   |
+       |	from tabela1 inner join tabela2 on tabela1.campoa = tabela2.campoc;|
+       +---------------------------------------------------------------------------+
+
+SELECT title, last_name, first_name
+FROM books INNER JOIN authors ON books.author_id = authors.author_id;
+
+
+--------------------------------------------------------------------------------------------------------------
+
+
+
+		NATURAL INNER JOIN
+
+SELECT title, last_name, first_name
+FROM books		
+
+					
+	OUTER JOIN 		mostra os que não tem dependente
+
+		LEFT OUTER JOIN
+	select * from authors LEFT join books on authors.author_id = books.author_id;	
+
+		RIGHT OUTER JOIN
+	select * from authors RIGHT join books on authors.author_id = books.author_id;
+
+		FULL OUTER JOIN
+	select * from authors FULL join books on authors.author_id = books.author_id;
+
+
+--------------------------------------------------------------------------------------------------------------
+
+que tem e não tem edição
+SELECT title, isbn
+FROM books LEFT JOIN edition ON biijes,biij_id = editions.book_id;
+
+
+
+só os livros que tem edição (só intersecção)
+SELECT title, isbn
+FROM books INNER JOIN edition ON biijes,biij_id = editions.book_id;
+
+
+SELECT title, isbn, cost, retail, stock, name
+FROM ((books NATURAL INNER JOIN editions) NATURAL INNER JOIN stock) NATURAL INNER JOIN publishers;
+
+				TA COM ERRO ARRUMAR DPS
+SELECT ROUND(AVG(cost),2) as avg_cost, ROUND(AVG(retail),2) AS avg_retail, name FROM ((books NATURAL INNER JOIN editions)
+NATURAL INNER JOIN stock) NATURAL INNER JOIN publisher GROUP BY name;
+
+
+
+
+	PRODUTO CARTESIANO
+
+
+
+
+
+
+
+--------------------------------------------------------
+
+ex4sqkbd042, questao 14 -> left
+
+	Quais nomes dos empregados e os números de departamentos dos quais eles são gerentes, se o forem
+
+	select empregado.nome, empregado.depnum
+		from empregado left join departamento on empregado.ident = departamento.identger;
+
+
+
+
+
+	2 SEMESTRE
+		ATUALMENTE NO 4 BIMESTRE
+			E FAZENDO TRAB COM NOTA DO 3 BIMESTRE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

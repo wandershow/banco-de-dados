@@ -1,0 +1,109 @@
+instalar postgres
+postgres - mainpg_hba_.conf
+local	all	postgres	trust
+// todas linha q n estão comentadas trocar para trust
+DDL: Data Definition Language
+sudo apt-get install posgresql
+/etc/postgresql/9.6/main/pg_hba.conf
+local	all	postgres			trust
+local	all	all				trust
+local	all	all		123.0.01/32	trust
+local	all	all		::1/128		trust
+
+sudo service postgresql restart
+//entrar
+psql -U postgres
+
+//comandos 
+	\? mostrar comandos
+	\q sair
+	\h [nome] mostrar a sintaxe
+	\i 
+	\o 
+	\d 
+	\l 		 mostra bancos de dados cadastrados
+	\c               define o titulo da tabela
+	\h create table  (mostrar a sintaxe do create table)
+	\dts             dados basicos
+	\h drop table    exclui uma tabela
+	\! clear         limpa
+	\c bd1  	 conecta no banco
+	\d 		 mostra tabelas cadastradas
+	\d nome da tab   mostra a estrutura da tabela
+	
+// [ ] opção, escolha
+// { } repetição
+	
+create table "(nome da tabela)" ( dados );
+
+CREATE DATABASE cobaia1;
+
+/---------------------------------------------------------------------------------------------------------------\
+
+DROP TABLE pessoa;
+
+CREATE TABLE pessoa ( 
+	cpf CHAR(11) NOT NULL,
+	nome VARCHAR(100)NOT NULL,
+	nascimento DATE NOT NULL CHECK (nascimento <= NOW()),
+	genero char(1) NOT NULL DEFAULT 'M' CHECK ((genero = 'M') OR (genero = 'F')),
+	PRIMARY KEY (cpf)
+);
+
+DROP TABLE dependente;
+
+CREATE TABLE dependente (
+	cpf CHAR(11) NOT NULL,
+	nome VARCHAR(100)NOT NULL,
+	nascimento DATE NOT NULL CHECK (nascimento <= NOW()),
+	genero char(1) NOT NULL DEFAULT 'M' CHECK ((genero = 'M') OR (genero = 'F')),
+	responsavel CHAR(11) NOT NULL REFERENCES pessoa(cpf),
+	PRIMARY KEY (cpf)
+);
+
+/---------------------------------------------------------------------------------------------------------------\
+DROP TABLE escala;
+DROP TABLE ponto;
+DROP TABLE funcionario;
+
+CREATE TABLE funcionario (
+	cpf CHAR(11) NOT NULL,
+	PRIMARY KEY (cpf),
+);
+
+
+CREATE TABLE ponto (
+	funcionario CHAR(11) NOT NULL REFERENCES funcionario(cpf),
+	data DATE NOT NULL DEFAULT NOW() CHECK (data <= NOW()),
+	turno CHAR NOT NULL DEFAULT 'A' CHECK((turno = 'A') OR (turno= 'B') OR ( turno = 'C')),
+	PRIMARY KEY (funcionario,data,turno)
+);
+
+CREATE TABLE escala (
+	funcionario CHAR(11) NOT NULL REFERENCES funcionario(cpf),
+	data DATE NOT NULL DEFAULT NOW() CHECK (data <= NOW()),
+	turno CHAR NOT NULL DEFAULT 'A' CHECK((turno = 'A') OR (turno= 'B') OR ( turno = 'C') OR ( turno = 'D'),
+	PRIMARY KEY (funcionario,data,turno)
+);
+/---------------------------------------------------------------------------------------------------------------\
+
+//comando em caps.
+//sempre usar aspas simples: '  '
+//PK sempre embaixo.
+//char( ) // tamanho fixo.
+//varchar( ) // no máximo esse tamanho.
+//default é caso venha em branco vira o valor escolhido.
+	Comentar no código do banco:    --comentário
+	
+INSERT INTO pessoa (cpf, nome, nascimento, genero) VALUES ('12345678901', 'xuxu meneghel', '1960-07-23', 'F');
+
+INSERT INTO pessoa dependente (cpf, nome, nascimento, genero,responsavel) VALUES ('12345678902', 'sasha meneghel', '2000-03-15', 'F', '12345678901');
+
+INSERT INTO pessoa (cpf, nome, nascimento, genero) VALUES ('12345678903','rita cadillac', '1950-07-23', 'F');
+	
+	
+	
+	
+
+	
+	

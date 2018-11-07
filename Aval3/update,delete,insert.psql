@@ -1,0 +1,331 @@
+insert
+
+	create table pessoa (
+		cpf char(11) not null,
+		nome varchar(100) not null,
+		nascimento date not null.
+		genero char(1),
+		primary key (cpf)
+	);
+
+	insert into pessoa (cpf, nome, nascimento, genero) values ('12345678901', 'fulano de tal', '1980-01-01', 'M');
+
+
+
+
+
+
+Insert 
+	
+	create table venda(
+		id serial not null,
+		vendedor char(11) not null,
+		cliente char(11),		
+		dia date not null,
+		desconto float not null,
+		primary key(id)
+	);
+-- esse serial funciona assim:
+-- id ta associado a um valor alto incrementado, ele cria uma regra
+	id	vendedor	cliente		dia		desconto
+	1	151515...	1312...		2017-12-31	5
+-- ele pega o ultima cara que inseriu
+	2	112313...	1231..		...		..
+
+-- acressentou id mas n coloca nos campo, sempre que for auto incrementado o banco vai por não "eu"
+-- tem um campo auto incrementado n coloca ele no insert
+--	inclui na venda
+	insert into venda(vendedor, cliente, dia, desconto)
+		values ('12345678901', null, '2018-11-06', 0) returning id;
+
+-- returning foi colocado dps n tinha antes.
+-- returning vai fazer inclusao e devolver tudo que ele inclui, todos valores que passei + o ID se por "returning *"
+
+	create table item (
+		id serial not null,
+		venda ? not null references venda(id),
+		produto char(5) references produto(codigo),
+		quantidade integer not null,
+		primary keyid)
+	);
+
+	insert into item (venda, produto, quantidade)
+		values (2, 15, 2) returning id; 
+
+
+
+
+
+
+
+---------------------------------------------------------- DELETE ----------------------------------------------------------------
+
+DELETE 
+
+	delete from pessoa; -- apaga todos dados da tabela pessoa 
+	delete from pessoa where cpf = '12345678901' returning *;
+	delete from pessoa where nome ilike '%joao%'returning *;
+
+
+
+
+
+--------------------------------------------------------- UPDATE ------------------------------------------------------------------
+
+update
+-- escolhina da esquina
+	update pessoa set nome = 'doris dos santos da silva'  --nome recebe isso
+	where cpf = '1234567890901';
+
+	update pessoa set nome = 'doris dos santos da silva';  --todo mundo virou a doris
+
+	-- aumentar em 10% o salárops dos vendedores que efetuaram mais de 50 vendas no mês passado
+
+	update vendedor
+		set salarios = salario*1.1
+		where (subselect);  
+
+
+	-- aumentar o salarios proporcional (10%) ao valor vendido no mes passado
+
+	update vendedor
+		set salario = salario+(tmp1.valor *0.1%)
+		from (subselect) as tmp1 -- sempre que tem um from no update obrigatoriamente tem um tetta join
+		where vendedor.cpf; = tmp1.vendedor;
+
+update tabela1 set campo1 = tabela1.campo+tabela2.compo1 from tabela2 where tabela1.id = tabela2.id and ...;
+
+select item.produto, sum(item.quantidade*produto.preco) as valor
+from venda
+	join item on venda.codigo = item.venda
+	join prodyuto on item.produto - produto.codigo
+where venda.dia between '2000-02-01' and '2000-02-29'
+group by 1
+order by 2 desc;
+
+
+create view faturamente as select item.produto, sum(item.quantidade*produto.preco) as valor
+from venda
+	join item on venda.codigo = item.venda
+	join prodyuto on item.produto - produto.codigo
+where venda.dia between '2000-02-01' and '2000-02-29'
+group by 1
+order by 2 desc;
+
+select * from faturamento;    -- n cria tabela ele só da um nome pra uma subselect tão comum que só damos um nome pra ela ficar mais legivel.
+
+
+
+
+-------------------------------------------------- transações ---------------------------------------------------------------------
+	
+select * --(id_voo, id_empresa,...)
+	 from voo 
+	 where origem = ? and destion = ? and dia = ? and hora = ? --> id_voo,id_empresa
+
+	select * from assentos where id_voo = ? and id_empresa = ? and ocupado = false; --> id_assento
+	
+	update assentos
+		set ocupado = true, cliente ='12345678901'
+		where id_assento = 3 and ocupado = false;
+
+	id_assento 	ocupado		cliente
+	3		false		-
+
+
+
+
+
+	begin;   -- é um comando
+	--comandos
+	commit;   -- confirmar
+
+	begin;   -- é um comando
+	--comandos
+	rollback;   -- volta tudo
+
+
+begin; -- começa a transação
+delete from venda;
+select * from venda; --vazio
+rollback -- volta tudo vulgo backup
+select * from venda; -- todos dados
+
+					-- controle de estoque --
+					-- controle de concorrencia pessimista --
+	begin;
+			select * from produto where id=12 for update; -- o primeiro a executar essa linha, ela tranca o produto 12 pra ngm mecher nele
+	<<<x =>>>	update produto set quantidade = quantidade-3 where id = 12 and quantiade >= 3;
+	<<<<if (x == 1)>>> commit;
+	<<<else>>> rollback;
+	commit;
+
+-- for update fora da transação trancar pra sempre.
+
+	begin;
+			select * from produto where id=12 for update;
+	<<<x =>>>	update produto set quantidade = quantidade-2 where id = 12 and quantidade >= 2;
+	<<<if (x == 1)>>> commit;
+	<<<else>>> rollback;
+
+					-- controle de concorrencia otimista --
+
+create table produto (
+	codigo char(5) not null,
+	descricao varchar(100) not null,
+	preco float not null,
+	quantidade integer not null,
+	versao int not null, -- ultimaalteracao timestamp not null    esse(codigo) ou do comente
+	primary key (codigo)
+);
+
+	codigo	descricao	quantidade	versao 
+	123a5	...	 	4	
+-- executando os codigo	
+				--  1
+				-- -1
+	insert into produto (codigo, descricao, preco, quantidade, versao) values ('123a5','...',100,4,1);
+
+	-- pode ter transacao
+
+	update produto 
+		set quantidade = quantidade-3	
+		where codigo = '123a5';
+
+	update produto 
+		set quantidade = quantidade-2	
+		where codigo = '123a5';
+
+-- codigo ^
+	
+
+	select * from produto; //123a5, ..., 4, 1  -- tela do cliente "// ......"
+	update produto 
+		set quantidade = quantidade-3	
+		where codigo = '123a5';
+
+	select 8 from produto; //123a5, ..., 4, 1 -- tela do cliente "// ......"
+	update produto 
+		set quantidade = quantidade-2	
+		where codigo = '123a5';
+
+-------------------------------------- att --------------------------------------------------
+
+	select * from produto; //123a5, ..., 4, 1 
+	update produto 
+		set quantidade = quantidade-3, versao = versao+1	
+		where codigo = '123a5' and quantidade >= 3 and versao = 1;
+
+	select * from produto; //123a5, ..., 4, 1 
+	update produto 
+		set quantidade = quantidade-2, versao = versao+1
+		where codigo = '123a5' and quantidade >= 2 and versao =1;
+
+-------------------------------------- att --------------------------------------------------
+
+	select * from produto; //123a5, ..., 4, 1 
+	update produto 
+		set quantidade = quantidade-3, versao = versao+1	
+		where codigo = '123a5' and quantidade >= 3 and versao = 1;
+-- executando
+	codigo	descricao	quantidade	versao 
+	123a5	...	 	1		2
+
+
+	select * from produto; //123a5, ..., 4, 1 
+	update produto 
+		set quantidade = quantidade-2, versao = versao+1
+		where codigo = '123a5' and quantidade >= 2 and versao =1;
+
+-- where vai falhar pq a versao foi att pra 1 por causa do cod anterior
+
+------------------------------- outro ---------------------------------------------------------
+
+	select * from produto; //123a5, ..., 4, 1 
+	update produto 
+		set quantidade = quantidade-2, versao = versao+1
+		where codigo = '123a5' and quantidade >= 2 and versao =1;
+
+-- executando
+	codigo	descricao	quantidade	versao 
+	123a5	...	 	2		2
+
+
+	select * from produto; //123a5, ..., 4, 1 
+	update produto 
+		set quantidade = quantidade-3, versao = versao+1	
+		where codigo = '123a5' and quantidade >= 3 and versao = 1;
+
+-- vai falhar tb, e se botar pra tentar dnv na tela do usuario a tabela dos valores vai ser att
+
+
+
+
+
+--------------------------------------------- mudando versao ----------------------------------------------------------------------
+
+create table produto (
+	codigo char(5) not null,
+	descricao varchar(100) not null,
+	preco float not null,
+	quantidade integer not null,
+	ultimaalteracao timestamp not null   --versao int not null, 
+	primary key (codigo)
+);
+
+	insert into produto (codigo, descricao, preco, quantidade, versao) values ('123a5','...',100,4, now());
+
+	codigo	descricao	quantidade	versao 
+	123a5	...	 	2		2018-11-06 22:16:10
+
+
+	select * from produto; //123a5, ..., 4, 2018-11-06 22:16:10
+	update produto 
+		set quantidade = quantidade-3, alteracao = now()
+		where codigo = '123a5' and quantidade >= 3 and alteracao = '2018-11-06 22:16:18';
+
+
+	select * from produto; //123a5, ..., 4, 2018-11-06 22:16:10
+	update produto 
+		set quantidade = quantidade-2, alteracao = now()
+		where codigo = '123a5' and quantidade >= 2 and alteracao = '2018-11-06 22:16:18';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

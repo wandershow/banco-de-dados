@@ -1,0 +1,299 @@
+Vinculação de Tabela
+
+create table funcionario (codigo int not null,nome varchar(100) not null,	
+	primary key(codigo));
+
+
+insert into funcionario (codigo,nome) values (1,'xuxa'), (2,'pele'), (3, 'didi'), (4, 'dede');
+
+create table dependente (codigo int not null,nome varchar(100) not null,
+funcionario int not null references funcionario(codigo),	
+	primary key(codigo));
+
+insert into dependente (codigo, nome, funcionario) values (1, 'sasha', 1), (2, 'paulo', 3);
+
+
+
+select * from funcionario, dependente;
+
+
+1 xuxa 1 sasha
+2 pele 
+3 didi 2 paulo
+4 dede 
+
+
+produto cartesiano      todas as combinações possiveis
+
+	(a,b,c) x (1,2) = (a1,a2,b1,b2,c1,c2)
+
+	(a,b,c) x (1,2) x (a1,a2,b1,b2,c1,c2)
+
+
+select funcionario.codigo from funcionario, dependente;
+      |tabela.nome do campo|
+
+select a.codigo from funcionario as am dependente as b;
+
+select * from funcionario, dependente where dependente.funcionario = funcionario.codigo;
+
+sempre sera colocado as tabelas na ordem do código (?)
+
+
+
++---------------------------------------------------------------------------+
+|									    |
+|        Mostar os nomes dos funcionários que possuem dependentes	    |
+|									    |
++---------------------------------------------------------------------------+
+
+select funcionario.nome from funcionario, dependente where (dependente.funcionairo = funcionario.codigo);
+
+select nome from funcionario where codigon in (select funcionario from dependete);
+
+
+select nome from funcionario where exists (select * from dependente where (dependente.funcionario = funcionario.codigo));
+
+
+
+
+
+---------------------------------------------------Banco Ing------------------------------------------------------------------------
+
+mostrar nome e cidade de todos os cliente que tem emprestimo
+
+select * from emprestimo, cliente;
+select * from emprestimo, cliente emprestimo;
+
+select * from emprestimo, cliente where emprestimo.nome_cliente = cliente.nome_cliente;
+select * from emprestimo;
+
+select cliente_nome, cliente.cidade_cliente from emprestimo, cliente where emprestimo.nome_cliente =
+
+select distinct nome_cliente from deposito where (nome_agencia = 'Perryridge');
+
+
+---
+Union:   	(1,2,3) U (2,4,6) = (1,2,3,4,6)
+Union All:      (1,2,3) U (2,4,6) = (1,2,3,2,4,6)
+(select distinct nome_cliente from deposito where (nome_agencia = 'Perryridge')) union
+(select distinct nome_cliente from emprestimo where (nome_agencia = 'Perryridge'));
+
+(select distinct nome_cliente
+	from deposito
+	where (nome_agencia = 'Perryridge'))
+union
+(select distinct nome_cliente
+	from emprestimo
+	where (nome_agencia = 'Perryridge'));
+
+
+select distinct nome_cliente from deposito where (nome_agencia = 'Perryridge')) union all
+(select distinct nome_cliente from deposito where (nome_agencia = 'Perryridge'));
+
+
+--------------------------------------------------------------------
+Pega só oque tem conta na bla bla e oq tem emprestimo na bla bla;
+
+(select distinct nome_cliente
+	from deposito
+	where(nome_agencia = 'Perryridge'))
+intersect
+(select distinct nome_cliente
+	from emprestimo
+	where(nome_agencia = 'Perryridge'));
+
+
+select *
+	from deposito, emprestimo
+	where (deposito.nome_agencia = 'Perryridge') and
+	      (emprestimo.nome_agencia = 'Perryridge') and
+	      (deposito.nome_cliente = emprestimo.nome_cliente);
+	
+select deposito.nome_cliente
+	from deposito, emprestimo
+	where (deposito.nome_agencia = 'Perryridge') and
+	      (emprestimo.nome_agencia = 'Perryridge') and
+	      (deposito.nome_cliente = emprestimo.nome_cliente);
+
+
+
+select distinct nome_cliente
+	from deposito
+	where (nome_agencia = 'Perryridge') and
+		(nome_cliente in
+			(select distinct nome_cliente
+				from emprestimo
+				where (nome_agencia = 'Perryridge')));
+-----------------------------------------------------------------------------
+
+
+
+-----------------------------------------------------------------------------
+Tudo que tem no primeiro e não tem no segundo
+
+cliente que tem conta mas não emprestimo.
+
+(select distinct nome_cliente
+	from deposito
+	where(nome_agencia = 'Perryridge'))
+except
+(select distinct nome_cliente
+	from emprestimo
+	where(nome_agencia = 'Perryridge'));
+
+
+
+select distinct nome_cliente
+	from deposito
+	where (nome_agencia = 'Perryridge') and
+		(nome_cliente not in
+			(select distinct nome_cliente
+				from emprestimo
+				where (nome_agencia = 'Perryridge')));
+
+
+
+			+--------+
+			| EXISTS |
+			+--------+
+
+pra cada cliente verifica se ele tem conta lá
+
+select  nome_cliente
+	from cliente
+	where exists (select *
+		from deposito
+		where (deposito.conme_cliente = cliente.nome_cliente) and
+		(nome_agencia = 'Perryridge'));
+
+Para cada cliente c
+	verifica se c possui uma conta na agencia perryridge
+
+
+select  nome_cliente
+	from cliente
+	where exists (select *
+		from emprestimo
+		where (emprestimo.conme_cliente = cliente.nome_cliente) and
+		(nome_agencia = 'Perryridge'));
+
+
+União
+
+select  nome_cliente
+	from cliente
+	where exists (select *
+		from deposito
+		where (deposito.conme_cliente = cliente.nome_cliente) and
+		(nome_agencia = 'Perryridge')) and
+ 		exists (select *
+			from emprestimo
+			where (emprestimo.conme_cliente = cliente.nome_cliente) and
+			(nome_agencia = 'Perryridge'));
+
+Intersecção
+
+select  nome_cliente
+	from cliente
+	where exists (select *
+		from deposito
+		where (deposito.conme_cliente = cliente.nome_cliente) and
+		(nome_agencia = 'Perryridge')) 
+		or
+ 		exists (select *
+			from emprestimo
+			where (emprestimo.conme_cliente = cliente.nome_cliente) and
+			(nome_agencia = 'Perryridge'));
+
+Diferença
+
+select  nome_cliente
+	from cliente
+	where exists (select *
+		from deposito
+		where (deposito.conme_cliente = cliente.nome_cliente) and
+		(nome_agencia = 'Perryridge')) and
+ 		not exists (select *
+			from emprestimo
+			where (emprestimo.conme_cliente = cliente.nome_cliente) and
+			(nome_agencia = 'Perryridge'));
+
+-----------------------------------------------------------------------------------------
+
+
+select ativos from agencia where (cidade_agencia = 'Brooklyn');
+
+select nome_agencia
+	from agencia
+	where (ativos > some ( select ativos
+		from agencia
+		where (cidade_agencia = 'Brooklyn')));
+
+select nome_agencia from agencia where (ativos > (select max(ativos)from agencia where (cidade_agencia = 'Brooklyn')));
+
+> some,all
+< some,all
+>= some,all
+<= some,all
+= some (in),all
+<> some,all (not in)
+
+select nome_agencia, avg(saldo) as saldo_medio
+	from deposito
+	group by nome_agencia
+	having (avg(saldo) >= all (select avg(saldo)
+		from deposito
+		group by nome_agencia))
+	order by nome_agencia asc;
+
+
+
+
+
+insert into agencia (nome_agencia, ativos, cidade_agencia) values ('Newone', null, 'Rye');
+select * from agencia;
+select * from agencia where (ativos is null);     mostrar os null
+select * from agencia where (ativos = null);
+
+
+
+
+
+
+
++------------------------------------------------- EXERCÍCIOS ---------------------------------------------------------------------+
+|																   |
+|1  Mostrar os canais que passaram o programa Smallville.									   |							   |
+|2  Mostrar quantas vezes passou o programa Smallville.								                   |									   |
+|3  Mostrar os canais que passaram mais programas no dia  30/04/2009.								   |
+|4  Mostrar os canais que passaram algum programa no canala Globo no período (todos dias cadastrados).				   |
+|5  Mostrar os canais que passam mais de 10 programas por dia em 30/04/2009.							   |
+|6  Mostrar os canais que passam mais de 10 programas por dia entre os dias 05/09/2009 e 10/05/2009.				   |
+|															 	   |
++----------------------------------------------------------------------------------------------------------------------------------+
+
++------------------------------------------------- RESPOSTAS ----------------------------------------------------------------------+
+|																   |
+|1  select distinct(canal) from programa where lower(nome) = 'smallville';							   |							   |
+|2  select count(canal) from programa where lower(nome) = 'smallville';  					                   |									   |
+|3  								   |
+|4  				   |
+|5  							   |
+|6  				   |
+|															 	   |
++----------------------------------------------------------------------------------------------------------------------------------+
+
+select canal,count(canal) from programa where lower(nome) = 'smallville' group by canal;
+
+
+
+
+
+
+
+
+
+
+
+
