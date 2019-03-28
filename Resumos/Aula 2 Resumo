@@ -154,97 +154,100 @@ mostrar o nome das agencias com o saldo total maior que 2000
 
 select nome_agencia,sum(saldo) as total from deposito group by nome_agencia having sum(saldo) >= 1000;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+2019-1
+
+Banco do HistoricoEscolar
+
+DROP TABLE AlunoDisciplina;
+DROP TABLE CursoDisciplina;
+DROP TABLE Disciplina;
+DROP TABLE Curso;
+DROP TABLE Aluno;
+
+Create Table Aluno(
+	Matricula char(8) not null,
+	Nome varchar(50) not null,
+	CPF char(11) not null,
+	RG varchar(20) not null,
+	Nascimento date not null check (nascimento <= now()),
+	Naturalidade varchar(50) not null,
+	Nacionalidade varchar(50) not null,
+	Filiacao varchar(100) not null,
+	Genero char(1) not null check ((genero = 'M') or (Genero = 'F')),
+	ObrigacaoEleitoral boolean,
+	ObrigacaoMilitar boolean,
+	DataIngresso date not null default now() check (DataIngresso <= now()),
+	DataConclusao date check ( DataConclusao <= NOW()),
+	SituacaoAcademica char(1) not null default 'R' check ((SituacaoAcademica = 'R') or (SituacaoAcademica = 'T') or (SituacaoAcademica = 'E')),
+	FormaIngresso varchar(20) not null check ((FormaIngresso = 'enem') or (FormaIngresso 'vestibular')),
+	primary key (Matricula)
+);
+
+Create Table Curso(
+	Codigo integer not null check (codigo > 0),
+	Nome varchar(50) not null,
+	primary key (codigo)
+);
+
+Create Table Disciplina(
+	Codigo int not null check (codigo > 0),
+	Nome varchar(50) not null,
+	Cargahoraria real not null check (Cargahoraria > 0),
+	primary key (Codigo)
+);
+
+Create Table CursoDisciplina(
+	CodigoCurso int references Curso(Codigo),
+	CodigoDisciplina int references Disciplina(Codigo),
+	PosicaoQSL int not null check (posicaoqsl > 0),
+	primary key (CodigoCurso, CodigoDisciplina)
+);
+
+Create Table AlunoDisciplina(
+	MatriculaAluno char(8) references Aluno(Matricula),
+	CodigoCurso int references Curso(Codigo),
+	CodigoDisciplina int references Disciplina(Codigo),
+	Semestre char(6) not null,
+	Frequencia real not null check (Frequencia >= 0),
+	Nota real not null check ((nota >= 0) and (nota <= 10)),
+	Situacao varchar(3) not null ((Situacao ='MAT') or (Situacao ='APR') or (Situacao ='REP') or (Situacao ='TRA') or (Situacao ='RPF') or (Situacao ='AE')),
+	primary key (MatriculaAluno, CodigoCurso, CodigoDisciplina, Semestre)
+);
+
+Insert Into curso (Codigo, Nome) values (1123, 'TADS');
+Insert Into curso (Codigo, Nome) values (999, 'TCE');
+
+Insert Into Disciplina (Codigo, Nome, CargaHoraria) values (2, 'logica de programacao', 150);
+Insert Into Disciplina (Codigo, Nome, CargaHoraria) values (5, 'fundamentos de matematica discreta', 50);
+Insert Into Disciplina (Codigo, Nome, CargaHoraria) values (10, 'programacao orientada a objeto', 100);
+Insert Into Disciplina (Codigo, Nome, CargaHoraria) values (13, 'banco de dados', 116.67);
+
+Insert Into Aluno (Matricula, Nome, CPF, RG, Nascimento, Naturalidade, Nacionalidade, Filiacao, Genero, ObrigacaoEleitoral,
+	ObrigacaoMilitar, Ingresso, Conclusao, SituacaoAcademica, FormaIngresso) values ('11230320', 'Marina', '03445175004', '9a99999999',
+	'1996-02-11', 'Rio Grande', 'brasileira', 'Maria, Rui', 'F', true, null, '2018-07-15', 'R', 'vestibular');
+
+Insert Into Aluno (Matricula, Nome, CPF, RG, Nascimento, Naturalidade, Nacionalidade, Filiacao, Genero, ObrigacaoEleitoral,
+	ObrigacaoMilitar, Ingresso, Conclusao, SituacaoAcademica, FormaIngresso) values ('11230285', 'Borges', '03819881042', '9b99999999',
+	'2000-05-10', 'Rio Grande', 'brasileira', 'Lucerema, Adalberto', 'M', true, true, '2018-01-15', 'R', 'vestibular');
+
+Insert into CursoDisciplina (CodigoCurso, CodigoDisciplina, PosicaoQSL) values (1123, 2,1);
+Insert into CursoDisciplina (CodigoCurso, CodigoDisciplina, PosicaoQSL) values (1123, 5,1);
+Insert into CursoDisciplina (CodigoCurso, CodigoDisciplina, PosicaoQSL) values (1123, 10,2);
+Insert into CursoDisciplina (CodigoCurso, CodigoDisciplina, PosicaoQSL) values (1123, 13,2);
+
+Insert into AlunoDisciplina () values ('11230320', 1123, 2, '2018-2', 85.6, 5.7, 'APR');
+Insert into AlunoDisciplina () values ('11230320', 1123, 5, '2018-2', 76.9, 8.9, 'AE');
+Insert into AlunoDisciplina () values ('11230320', 1123, 10, '2019-1', 0, 0, 'MAT');
+Insert into AlunoDisciplina () values ('11230320', 1123, 13, '2019-1', 0, 0, 'MAT');
+
+
+Insert into AlunoDisciplina () values ('11230285', 1123, 2, '2018-1', 85.3, 7.6, 'APR');
+Insert into AlunoDisciplina () values ('11230285', 1123, 5, '2018-1', 76.9, 5.6, 'APR');
+Insert into AlunoDisciplina () values ('11230285', 1123, 10, '2018-2', 100, 9.5, 'APR');
+Insert into AlunoDisciplina () values ('11230285', 1123, 13, '2018-2', 100, 4.6, 'REP');
+Insert into AlunoDisciplina () values ('11230285', 1123, 13, '2019-1', 0, 0, 'MAT');
 
 
 
