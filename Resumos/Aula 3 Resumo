@@ -296,4 +296,39 @@ select canal,count(canal) from programa where lower(nome) = 'smallville' group b
 
 
 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+2019-1
+
+select 1+2;
+
+select 1+2*3; --incorreto.
+
+select 1+(2*3; --fazer assim, não deixar postgres adivinhar nada.
+
+\! clear  -- limpar tela
+
+select 1+(2*3) as resultado; --vai dar uma coluna com nome de "resultado"
+
+select CURRENTE_TIME; -- hora,minuto,seg,mil
+
+select now() --timestamp: data,hora
+
+select round(3.14151617181920,3) --valor que quero arredondar, 3 casas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
