@@ -316,15 +316,29 @@ select now() --timestamp: data,hora
 
 select round(3.14151617181920,3) --valor que quero arredondar, 3 casas.
 
+select real '12.34';
 
+select '12.34'::real;
 
+select cast('12.34' as real); --os três métodos transforma os números que eram texto em número, são conversão, mas essa é generalizada.
 
+select '12.34'::real+3.14; --transforma em real e soma;
 
+select now()+'2 months 3 days 14 hours'::interval; --interval é um periodo de tempo que pode acresentar ou subtrair de uma data/hora.
 
+select now()-'1 hours 35 minutes'::interval;
 
+select '2019-04-02'::date; --virou data
 
+select '2019-04-02'::date+'5 hours'::interval;
 
+select (2 < 3);
 
+select ((2 < 3) = true);
+
+select ((2 < 3) = false);
+
+select ((2 < 3) = 'true'::boolean); --devolve true ou false
 
 
 
