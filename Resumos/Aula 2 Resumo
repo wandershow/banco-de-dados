@@ -237,17 +237,17 @@ Insert into CursoDisciplina (CodigoCurso, CodigoDisciplina, PosicaoQSL) values (
 Insert into CursoDisciplina (CodigoCurso, CodigoDisciplina, PosicaoQSL) values (1123, 10,2);
 Insert into CursoDisciplina (CodigoCurso, CodigoDisciplina, PosicaoQSL) values (1123, 13,2);
 
-Insert into AlunoDisciplina () values ('11230320', 1123, 2, '2018-2', 85.6, 5.7, 'APR');
-Insert into AlunoDisciplina () values ('11230320', 1123, 5, '2018-2', 76.9, 8.9, 'AE');
-Insert into AlunoDisciplina () values ('11230320', 1123, 10, '2019-1', 0, 0, 'MAT');
-Insert into AlunoDisciplina () values ('11230320', 1123, 13, '2019-1', 0, 0, 'MAT');
+Insert into AlunoDisciplina (MatriculaAluno,CodigoCurso,CodigoDisciplina,Semestre,Frequencia,Nota,Situacao) values ('11230320', 1123, 2, '2018-2', 85.6, 5.7, 'APR');
+Insert into AlunoDisciplina (MatriculaAluno,CodigoCurso,CodigoDisciplina,Semestre,Frequencia,Nota,Situacao) values ('11230320', 1123, 5, '2018-2', 76.9, 8.9, 'AE');
+Insert into AlunoDisciplina (MatriculaAluno,CodigoCurso,CodigoDisciplina,Semestre,Frequencia,Nota,Situacao) values ('11230320', 1123, 10, '2019-1', 0, 0, 'MAT');
+Insert into AlunoDisciplina (MatriculaAluno,CodigoCurso,CodigoDisciplina,Semestre,Frequencia,Nota,Situacao) values ('11230320', 1123, 13, '2019-1', 0, 0, 'MAT');
 
 
-Insert into AlunoDisciplina () values ('11230285', 1123, 2, '2018-1', 85.3, 7.6, 'APR');
-Insert into AlunoDisciplina () values ('11230285', 1123, 5, '2018-1', 76.9, 5.6, 'APR');
-Insert into AlunoDisciplina () values ('11230285', 1123, 10, '2018-2', 100, 9.5, 'APR');
-Insert into AlunoDisciplina () values ('11230285', 1123, 13, '2018-2', 100, 4.6, 'REP');
-Insert into AlunoDisciplina () values ('11230285', 1123, 13, '2019-1', 0, 0, 'MAT');
+Insert into AlunoDisciplina (MatriculaAluno,CodigoCurso,CodigoDisciplina,Semestre,Frequencia,Nota,Situacao) values ('11230285', 1123, 2, '2018-1', 85.3, 7.6, 'APR');
+Insert into AlunoDisciplina (MatriculaAluno,CodigoCurso,CodigoDisciplina,Semestre,Frequencia,Nota,Situacao) values ('11230285', 1123, 5, '2018-1', 76.9, 5.6, 'APR');
+Insert into AlunoDisciplina (MatriculaAluno,CodigoCurso,CodigoDisciplina,Semestre,Frequencia,Nota,Situacao) values ('11230285', 1123, 10, '2018-2', 100, 9.5, 'APR');
+Insert into AlunoDisciplina (MatriculaAluno,CodigoCurso,CodigoDisciplina,Semestre,Frequencia,Nota,Situacao) values ('11230285', 1123, 13, '2018-2', 100, 4.6, 'REP');
+Insert into AlunoDisciplina (MatriculaAluno,CodigoCurso,CodigoDisciplina,Semestre,Frequencia,Nota,Situacao) values ('11230285', 1123, 13, '2019-1', 0, 0, 'MAT');
 
 
 
