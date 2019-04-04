@@ -433,6 +433,59 @@ select codigo,canal, ltrim(to_char(horario, 'DD/MM/YYYY')) as data, horario::tim
 
 -- to_char pega o parametro e transfomra em texto, exemplo:  to_char(3, '00') = '03'
 
+select codigo,canal, ltrim(to_char(horario, 'DD/MM/YYYY')) as data, horario::time as hora,
+date_part('dow', horario) as dia_da_semana, nome from programa limit 20;
+
+--select case when 1<2 then 'a' else 'b' end;
+
+--select case when 3<2 then 'a' else 'b' end;
+
+--select *, case when current_date - nascimento > 18 then 'maior' else 'menor' end as maioridade from pessoa;
+
+--select *, case when geberi = 'F' then 'muié' else 'omi' end as general from pessoa;
+
+select codigo,
+	canal,
+	ltrim(to_char(horario, 'DD/MM/YYYY')) as data,
+	horario::time as hora,
+	case date_part('dow', horario)
+		when 0 then 'domingo'
+		when 1 then 'segunda'
+		when 2 then 'terca'
+		when 3 then 'quarta'
+		when 4 then 'quinta'
+		when 5 then 'sexta'
+		when 6 then 'sabado'
+	end as dia_da_semana,
+	nome 
+from 
+	programa
+limit 20;
+
+
+select codigo,
+	canal,
+	ltrim(to_char(horario, 'DD/MM/YYYY')) as data,
+	horario::time as hora,
+	('{Domingo,Segunda,Terça,Quarta,Quinta,Sexta,Sabado}'::text[])[date_part('dow', horario)+1] as dia_da_semana,
+	nome 
+from 
+	programa
+limit 20;
+
+--converte tudo pra vetor de texto [ ... ] , dps usa ( [ ... ] ), o +1 é pra seguinta coisa, no postgres o domingo é 0, mas no vetor é 1
+-- o +1 é pra quando der domingo ele busque o valor no vetor que seria 0 + 1 = 1, 1 é a posição de domingo no vetor.
+
+insert into TABELA (data) values ('2019-04-03');
+insert into TABELA (data) values (to_date('2019/04/03', 'DD/MM/YYYY')); 
+insert into TABELA (data) values (to_date('2019.04.03', 'DD.MM.YYYY')); 
+
+'2009-05-10 13:10'
+
+-- programa passando AGORA no canal PLA
+select * from programa where (horario <= '2009-05-10 13:10'::timestamp) and (canal = 'PLA') order by horario desc limit 1;
+
+select * from programa where (horario <= now()) and (canal = 'PLA') order by horario desc limit 1;
 
 
 
