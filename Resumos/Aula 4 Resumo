@@ -200,9 +200,18 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 select * from produto where (lower(descricao) like '%hd % 500%gb%');
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+select *, case when (tmp1.descricao < (select descricao from produto where (lower(descricao) like '%hd %1000%gb%') limit 1)) then 'menor' else 'maior' end as teste from (
+select *  from produto
+where (lower(descricao) like '%hd %gb%')
+and
+(preco = (select min(preco) as menor
+from produto  where lower(descricao) like '%hd %gb%'))
+) as tmp1
+where lower(tmp1.descricao) not in
+(select descricao from produto where (lower(descricao) like '%hd %1000%gb%'));
 
 
-
+insert into produto (codigo,descricao,preco) values (99994,'HD EXT. 900 GB WESTERN DIG. MYBOOK ESSENTIAL 3.5" USB2.0',15)
 
 select * from produto where (lower(descricao) like '%hd % 1%gb%');
 1687  87
