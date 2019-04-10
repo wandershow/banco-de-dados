@@ -206,8 +206,8 @@ select * from produto where (lower(descricao) like '%hd % 500%gb%');
 
 
 
-
-
+select * from produto where (lower(descricao) like '%hd % 1%gb%');
+1687  87
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 select * 
 from produto 
@@ -219,6 +219,16 @@ and
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	
 	
+select * 
+from produto 
+where (lower(descricao) like '%hd %100%gb%');
+
+
+select nome_agencia,sum(saldo) as total from deposito group by nome_agencia having sum(saldo) >= 1000;
+select * from produto group by descricao having
+
+
+
 
 
 
