@@ -200,9 +200,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 select * from produto where (lower(descricao) like '%hd % 500%gb%');
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-select * from produto where (lower(descricao) like '%hd %gb%') order by descricao asc;
-select * from produto where (lower(descricao) like '%hd % 1%gb%');
-select * from produto where (lower(descricao) like '%hd % 500%gb%');
+
 
 
 
