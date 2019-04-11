@@ -266,6 +266,34 @@ select nome_agencia,sum(saldo) as total from deposito group by nome_agencia havi
 
 
 
+1-Mostrar quantas vezes passou o programa Friends no canal Warner
+--select count(*) from programa where canal = 'WBT' and lower(nome) = 'friends';
+
+2-Mostrar em quantos dias diferentes passou o programa Friends no canal Warner
+--select count(distinct horario::date) from programa where lower(nome) = 'friends' and canal = 'WBT';
+
+3-Mostrar quantas vezes passou/repetiu cada programa do canal Warner
+--select nome,count(nome) from programa where programa.canal = 'WBT' group by programa.nome;
+
+4-Mostrar o programa que mais repetiu no canal Warner
+
+select lower(nome) as nome ,count(*) as quantidade from programa where canal = 'WBT' group by 1 having count(*)
+= (select count(*) as quantidade from programa where canal = 'WBT' group by lower(nome) order by 1 desc limit 1);
+
+5-Mostrar em quais dias passou o filme Batman Begins
+--select distinct horario::date from programa where lower(nome) = 'batman begins';
+
+6-Mostrar em quais dias e canais passou o filme Batman Begins
+--select horario::date, canal from programa where lower(nome) = 'batman begins';
+
+7-Mostrar quantos noticiários (news) foram exibidios em 05/05/2009
+--select count(distinct nome) from programa where horario::date = '05/05/2009' and lower(nome) like '%news%' group by nome,horario;
+
+8-Mostrar quantos canais exibiram noticiários (news) em 05/05/2009
+select count(distinct canal) from programa where horario::date = '05/05/2009' and lower(nome) like '%news%';
+
+9-Mostrar quais os noticiários esportivos em 05/05/2009
+--select distinct nome,horario::date from programa where horario::date = '05/05/2009' and lower(nome) like '%news%' group by nome,horario;
 
 
 
