@@ -42,16 +42,22 @@ where filme.realizador = distribuicao.ator;
 select count(filme.titulo) as numero_filme from filme join distribuicao on distribuicao.titulo = filme.titulo where 
 lower(ator) like '%eastwood%';
 --6: O nome do cinema e o número da sala que apresenta um filme realizado por bovin. Dar também o nome do filme.
-select distinct programa.nomcine,programa.sala,programa.titulo from programa join filme on filme.titulo = programa.titulo 
-where lower(realizador) like '%bovin%';
+select programa.nomcine,programa.sala,programa.titulo from programa join filme on filme.titulo = programa.titulo 
+where lower(realizador) like '%bovin%' 
+group by programa.nomcine,programa.sala,programa.titulo;
 --7: O nome e o número de telefone dos cinemas que tem salas com capacidade para menos de 100 pessoas.
 select cinema.nomcine, cinema.tel from cinema
 join salacinema on salacinema.nomcine = cinema.nomcine where salacinema.nulugares < 100;
 --8: Todos os atores que trabalharam com a atriz deneuve.
-select distribuicao.ator,from filme join distribuicao on distribuicao.titulo = filme.titulo
-where lower(distribuicao.ator) like '%deneuve%';
+select d1.ator,d2.ator from distribuicao as d1 
+join distribuicao as d2 on d1.ator = d2.ator
+where d1.ator like '%deneuve%' and d1.ator<>d2.ator;
 
-select * from distribuicao as d1 join distribuicao as d2 on d1.titulo = d2.titulo where d1.ator = 'denuve';
+
+select * from distribuicao
+(select * from distribuicao where ator <> 'deneuve') as tmp1
+where distribuicao.ator like '%deneuve%' 
+
 
 --9: As ruas e número de lugares dos cinemas onde passam os filmes de 1984.
 select distinct cinema.rua,salacinema.nulugares from cinema
