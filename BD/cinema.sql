@@ -27,14 +27,39 @@
 
 --Apresentar as consultas SQL que apresentem os dados listados abaixo
 --1: Lista dos filmes (Titulo, Ano, Realizador) franceses.
+select titulo,ano,realizador from filme where pais = 'france';
 --2: Os anos em que o ator gabin estreou um filme.
+select filme.titulo, filme.ano, distribuicao.ator from filme join distribuicao on distribuicao.titulo = filme.titulo where 
+lower(ator) like '%gabin%';
+
 --3: Os atores que trabalharam com o realizador truffaut.
+select distribuicao.ator, filme.realizador from filme join distribuicao on distribuicao.titulo = filme.titulo
+where lower(filme.realizador) like '%truffaut%';
 --4: Lista dos filmes onde o realizador é também ator.
+select filme.titulo from filme join distribuicao on distribuicao.titulo = filme.titulo
+where filme.realizador = distribuicao.ator;
 --5: O número de filmes onde eastwood trabalhou como ator.
+select count(filme.titulo) as numero_filme from filme join distribuicao on distribuicao.titulo = filme.titulo where 
+lower(ator) like '%eastwood%';
 --6: O nome do cinema e o número da sala que apresenta um filme realizado por bovin. Dar também o nome do filme.
+select distinct programa.nomcine,programa.sala,programa.titulo from programa join filme on filme.titulo = programa.titulo 
+where lower(realizador) like '%bovin%';
 --7: O nome e o número de telefone dos cinemas que tem salas com capacidade para menos de 100 pessoas.
+select cinema.nomcine, cinema.tel from cinema
+join salacinema on salacinema.nomcine = cinema.nomcine where salacinema.nulugares < 100;
 --8: Todos os atores que trabalharam com a atriz deneuve.
+select distribuicao.ator,from filme join distribuicao on distribuicao.titulo = filme.titulo
+where lower(distribuicao.ator) like '%deneuve%';
+
+select * from distribuicao as d1 join distribuicao as d2 on d1.titulo = d2.titulo where d1.ator = 'denuve';
+
 --9: As ruas e número de lugares dos cinemas onde passam os filmes de 1984.
+select distinct cinema.rua,salacinema.nulugares from cinema
+join salacinema on salacinema.nomcine = cinema.nomcine
+join programa on programa.nomcine = cinema.nomcine
+join filme on programa.titulo = filme.titulo
+where filme.ano = 1984
+group by cinema.rua,salacinema.nulugares;
 --10: Realizadores que trabalharam como atores em filmes que eles mesmos não realizaram.
 --11: O número de atores de cada filme apresentado em qualquer sala de qualquer cinema.
 --12: Dar para cada filme em cartaz, depois de quantas semanas ele está em cartaz e o número de entradas.
