@@ -27,55 +27,55 @@
 
 --Apresentar as consultas SQL que apresentem os dados listados abaixo
 --1: Lista dos filmes (Titulo, Ano, Realizador) franceses.
-select titulo,ano,realizador from filme where pais = 'france';
+--select titulo,ano,realizador from filme where pais = 'france';
 
 --2: Os anos em que o ator gabin estreou um filme.
-select distinct filme.ano from filme join distribuicao on distribuicao.titulo = filme.titulo where 
-lower(ator) like '%gabin%';
+--select distinct filme.ano from filme join distribuicao on distribuicao.titulo = filme.titulo where 
+--lower(ator) like '%gabin%';
 
-select titulo from distribuicao where lower(ator) = 'gabin'
-select distinct ano from filme where titulo in (select titulo from distribuicao where lower(ator) = 'gabin');
+--select titulo from distribuicao where lower(ator) = 'gabin'
+--select distinct ano from filme where titulo in (select titulo from distribuicao where lower(ator) = 'gabin');
 
 --3: Os atores que trabalharam com o realizador truffaut.
-select distribuicao.ator, filme.realizador from filme join distribuicao on distribuicao.titulo = filme.titulo
-where lower(filme.realizador) like '%truffaut%';
+--select distribuicao.ator, filme.realizador from filme join distribuicao on distribuicao.titulo = filme.titulo
+--where lower(filme.realizador) like '%truffaut%';
 
 --4: Lista dos filmes onde o realizador é também ator.
-select filme.titulo from filme join distribuicao on distribuicao.titulo = filme.titulo
-where lower(filme.realizador) = lower(distribuicao.ator);
+--select filme.titulo from filme join distribuicao on distribuicao.titulo = filme.titulo
+--where lower(filme.realizador) = lower(distribuicao.ator);
 
-select titulo from ((select ator, titulo from distribuicao) intersect
-(select realizador, titulo from filme)) as tmp1;
+--select titulo from ((select ator, titulo from distribuicao) intersect
+--(select realizador, titulo from filme)) as tmp1;
 
 --5: O número de filmes onde eastwood trabalhou como ator.
-select count(filme.titulo) as numero_filme from filme 
-join distribuicao on distribuicao.titulo = filme.titulo where 
-lower(ator) like '%eastwood%';
+--select count(filme.titulo) as numero_filme from filme 
+--join distribuicao on distribuicao.titulo = filme.titulo where 
+--lower(ator) like '%eastwood%';
 
 --6: O nome do cinema e o número da sala que apresenta um filme realizado por bovin. Dar também o nome do filme.
-select programa.nomcine,programa.sala,programa.titulo from programa 
-join filme on filme.titulo = programa.titulo 
-where lower(filme.realizador) like '%bovin%' 
-group by programa.nomcine,programa.sala,programa.titulo;
+--select programa.nomcine,programa.sala,programa.titulo from programa 
+--join filme on filme.titulo = programa.titulo 
+--where lower(filme.realizador) like '%bovin%' 
+--group by programa.nomcine,programa.sala,programa.titulo;
 
-select titulo, nomcine, sala from programa where titulo in (select titulo from filme where lower(filme.realizador) like '%bovin%')
-group by 1,2,3;
+--select titulo, nomcine, sala from programa where titulo in (select titulo from filme where lower(filme.realizador) like '%bovin%')
+--group by 1,2,3;
 							    					    
 --7: O nome e o número de telefone dos cinemas que tem salas com capacidade para menos de 100 pessoas.
-select cinema.nomcine, cinema.tel from cinema
-join salacinema on salacinema.nomcine = cinema.nomcine where salacinema.nulugares < 100;
+--select cinema.nomcine, cinema.tel from cinema
+--join salacinema on salacinema.nomcine = cinema.nomcine where salacinema.nulugares < 100;
  
-select nomcine, tel from cinema where nomcine in (select nomcine from salacinema where nulugares <100);
+--select nomcine, tel from cinema where nomcine in (select nomcine from salacinema where nulugares <100);
 
 --8: Todos os atores que trabalharam com a atriz deneuve.
-select distinct tmp1.ator from distribuicao join
-(select * from distribuicao where lower(ator) <> 'deneuve') as tmp1
-on distribuicao.titulo = tmp1.titulo
-where lower(distribuicao.ator) like '%deneuve%'; 
+--select distinct tmp1.ator from distribuicao join
+--(select * from distribuicao where lower(ator) <> 'deneuve') as tmp1
+--on distribuicao.titulo = tmp1.titulo
+--where lower(distribuicao.ator) like '%deneuve%'; 
 
-select ator from distribuicao 
-where titulo in 
-(select titulo from distribuicao where lower (ator) = 'deneuve') and lower(ator) <> 'deneuve';
+--select ator from distribuicao 
+--where titulo in 
+--(select titulo from distribuicao where lower (ator) = 'deneuve') and lower(ator) <> 'deneuve';
  
 --9: As ruas e número de lugares dos cinemas onde passam os filmes de 1984.
 --select cinema.rua,sum(salacinema.nulugares) as total_lugar from cinema
@@ -85,34 +85,34 @@ where titulo in
 --where filme.ano = 1984
 --group by cinema.rua;
  
-select cinema.rua, sum(salacinema.nulugares) as qlugares from cinema 
-join salacinema on cinema.nomcine = salacinema.nomcine where cinema.nomcine in (
-select nomcine from programa where titulo in (select titulo from filme where ano = '1984')) group by cinema.rua;
+--select cinema.rua, sum(salacinema.nulugares) as qlugares from cinema 
+--join salacinema on cinema.nomcine = salacinema.nomcine where cinema.nomcine in (
+--select nomcine from programa where titulo in (select titulo from filme where ano = '1984')) group by cinema.rua;
  
 
 --10: Realizadores que trabalharam como atores em filmes que eles mesmos não realizaram.
-select  distribuicao.titulo,filme.realizador,distribuicao.ator from filme
-join distribuicao on distribuicao.titulo = filme.titulo where distribuicao.ator <> filme.realizador and 
-distribuicao.ator in (select distinct filme.realizador from filme);
+--select  distribuicao.titulo,filme.realizador,distribuicao.ator from filme
+--join distribuicao on distribuicao.titulo = filme.titulo where distribuicao.ator <> filme.realizador and 
+--distribuicao.ator in (select distinct filme.realizador from filme);
 					      
-select ator,titulo from distribuicao where ator in (select realizador from filme)
-except
-select realizador, titulo from filme					      
+--select ator,titulo from distribuicao where ator in (select realizador from filme)
+--except
+--select realizador, titulo from filme					      
 					      
 --11: O número de atores de cada filme apresentado em qualquer sala de qualquer cinema.
-select distinct count(distribuicao.ator) as numero_de_atores,programa.titulo,programa.sala,programa.nomcine from distribuicao
-join programa on programa.titulo = distribuicao.titulo
-group by distribuicao.ator,programa.nomcine,programa.sala,programa.titulo order by 2;
+--select distinct count(distribuicao.ator) as numero_de_atores,programa.titulo,programa.sala,programa.nomcine from distribuicao
+--join programa on programa.titulo = distribuicao.titulo
+--group by distribuicao.ator,programa.nomcine,programa.sala,programa.titulo order by 2;
 
 --12: Dar para cada filme em cartaz, depois de quantas semanas ele está em cartaz e o número de entradas.
-select tmp1.titulo,sum(tmp1.semana) as semanas,sum(tmp1.nuentradas) as nuentradas from
-(select titulo,semana,nuentradas from programa group by 1,2,3 order by 1) as tmp1
-group by 1;
+--select tmp1.titulo,sum(tmp1.semana) as semanas,sum(tmp1.nuentradas) as nuentradas from
+--(select titulo,semana,nuentradas from programa group by 1,2,3 order by 1) as tmp1
+--group by 1;
 
 --13: Para cada realizador, dar o número médio de entradas da totalidade de seus filmes.
-select filme.realizador,avg(programa.nuentradas) as media_entrada from filme
-join programa on programa.titulo = filme.titulo
-group by 1 order by 1;
+--select filme.realizador,avg(programa.nuentradas) as media_entrada from filme
+--join programa on programa.titulo = filme.titulo
+--group by 1 order by 1;
 
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 DROP TABLE salacinema;
