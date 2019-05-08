@@ -209,9 +209,46 @@ INSERT INTO CARGOEMPREGADO VALUES (4, 27, '1998-06-24');
 INSERT INTO CARGOEMPREGADO VALUES (5, 15, '2001-09-19');
 INSERT INTO CARGOEMPREGADO VALUES (9, 24, '2002-02-05');
 
+DEPTO (
+	CODIGO INTEGER NOT NULL,
+	NOME VARCHAR(100) NOT NULL,
+	PRIMARY KEY (CODIGO));
+CARGO (
+	CODIGO INTEGER NOT NULL,
+	DESCRICAO VARCHAR(100) NOT NULL,
+	SALARIO REAL NOT NULL,
+	PRIMARY KEY (CODIGO));
+EMPREGADO (
+	CODIGO INTEGER NOT NULL,
+	NOME VARCHAR(100) NOT NULL,
+	GENERO CHAR(1) NOT NULL,
+	NASCIMENTO DATE NOT NULL,
+	PRIMARY KEY (CODIGO));
+DEPTOEMPREGADO (
+	DEPTO INTEGER REFERENCES DEPTO(CODIGO),
+	EMPREGADO INTEGER REFERENCES EMPREGADO(CODIGO),
+	INICIO DATE NOT NULL);
+CARGOEMPREGADO (
+	CARGO INTEGER REFERENCES CARGO(CODIGO),
+	EMPREGADO INTEGER REFERENCES EMPREGADO(CODIGO),
+	INICIO DATE NOT NULL);
+		     
 -- mostrar quantos cargos cada empregado teve
+select empregado.nome, count(*) as qtde from empregado
+		     join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+group by empregado.codigo
+order by 2 desc;
 -- mostrar o nome do empregado que teve mais cargos
+select empregado.nome, count(*) as qtde from empregado
+		     join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+group by empregado.codigo having count(*) = (
+select count(*) from empregado
+		     join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+group by empregado.codigo
+order by 1 desc limit 1) order by 1;		     
+		     
 -- mostrar o cargo e o salário atual de cada empregado
+
 -- mostrar os empregados que atualmente trabalham no Depto 2
 -- mostrar quantos empregados trabalham atualmente em cada depto
 -- mostrar o nome do empregado atualmente com o maior salário de cada depto
