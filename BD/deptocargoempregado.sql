@@ -248,7 +248,21 @@ group by empregado.codigo
 order by 1 desc limit 1) order by 1;		     
 		     
 -- mostrar o cargo e o salário atual de cada empregado
+select tmp1.nome, tmp1.inicio from(
+select empregado.nome, CARGOEMPREGADO.INICIO from empregado
+join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado order by 1,2) as tmp1		     
 
+select tm1.nome,  from empregado
+join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+		     
+select *
+from empregado
+join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+join (select empregado.nome, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado		     
+group by 1 order by 1) as tmp1 on cargoempregado.inicio = tmp1.inicio_cargo 
+     
+		     
 -- mostrar os empregados que atualmente trabalham no Depto 2
 -- mostrar quantos empregados trabalham atualmente em cada depto
 -- mostrar o nome do empregado atualmente com o maior salário de cada depto
