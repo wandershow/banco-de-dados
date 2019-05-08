@@ -198,6 +198,7 @@ having count(*) > 1;
 
 
 --4) Mostrar o título dos livros sobre PostgreSQL não locados nos últimos 3 meses.
+--MINHA
 select livro.titulo from livro
 join exemplar on exemplar.livro = livro.codigo
 join locacao on locacao.exemplar = exemplar.codigo
