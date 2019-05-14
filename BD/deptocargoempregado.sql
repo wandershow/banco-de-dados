@@ -238,6 +238,7 @@ select empregado.nome, count(*) as qtde from empregado
 		     join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
 group by empregado.codigo
 order by 2 desc;
+		     
 -- mostrar o nome do empregado que teve mais cargos
 select empregado.nome, count(*) as qtde from empregado
 		     join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
@@ -248,33 +249,389 @@ group by empregado.codigo
 order by 1 desc limit 1) order by 1;		     
 		     
 -- mostrar o cargo e o salário atual de cada empregado
-select tmp1.nome, tmp1.inicio from(
-select empregado.nome, CARGOEMPREGADO.INICIO from empregado
-join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado order by 1,2) as tmp1		     
-
-select tm1.nome,  from empregado
-join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
-		     
-select *
+select empregado.nome, cargo.descricao, cargo.salario
 from empregado
 join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
-join (select empregado.nome, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
-join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado		     
-group by 1 order by 1) as tmp1 on cargoempregado.inicio = tmp1.inicio_cargo 
-     
-		     
--- mostrar os empregados que atualmente trabalham no Depto 2
--- mostrar quantos empregados trabalham atualmente em cada depto
--- mostrar o nome do empregado atualmente com o maior salário de cada depto
--- mostrar a faixa do IRPF atual de cada empregado
--- mostrar todos os cargos de um empregado
--- mostrar o salário médio de um empregado
--- mostrar o cargo mais alto atual de cada depto
--- mostrar a média de salário atual por gênero
--- mostrar a média de salário atual por depto
--- mostrar o maior e o menor salário atual por gênero
--- mostrar o maior e o menor salário atual por depto
--- mostrar o nome da mulher que recebe atualmente o maior salario
--- mostrar o nome da mulher que recebe atualmente o maior salario por depto
--- mostrar o departamento com mais empregados atualmente
+	join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+	join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+	group by 1 order by 1) as tmp1
+	on tmp1.codigo = empregado.codigo
+join cargo on cargoempregado.cargo = cargo.codigo
+where cargoempregado.inicio = tmp1.inicio_cargo;
 
+--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+select * from cargoempregado order by 2 asc, 3 asc;
+
+select cargoempregado.empregado, max(cargoempregado.inicio) from cargoempregado group by 1;
+
+select cargoempregado.empregado, max(cargoempregado.inicio) as inicio from cargoempregado group by 1;
+
+--Cargo Atual (usando IN)
+select * from cargoempregado where (empregado, inicio) in
+(select cargoempregado.empregado, max(cargoempregado.inicio) as inicio from cargoempregado group by 1);
+
+select empregado.nome, cargo.descricao, cargo.salario from cargo
+join (select * from cargoempregado where (empregado, inicio) in
+	(select cargoempregado.empregado, max(cargoempregado.inicio) as inicio from cargoempregado group by 1)) as cargoatual
+on cargo.codigo = cargoatual.cargo
+join empregado on empregado.codigo = cargoatual.empregado;
+--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+     		     
+-- mostrar os empregados que atualmente trabalham no Depto 2
+select empregado.nome, depto.codigo
+from empregado
+join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+join depto on deptoempregado.depto = depto.codigo
+join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	group by 1) as tmp1
+on tmp1.codigo = empregado.codigo
+where deptoempregado.inicio = tmp1.inicio_cargo and depto.codigo = 2;
+	 
+-- mostrar quantos empregados trabalham atualmente em cada depto
+select distinct deptoempregado.depto,count(*) as trabalham
+from empregado
+join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+join depto on deptoempregado.depto = depto.codigo
+join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	group by 1 order by 1) as tmp1
+on tmp1.codigo = empregado.codigo
+where deptoempregado.inicio = tmp1.inicio_cargo
+group by 1 order by 1;
+	 
+-- mostrar o nome do empregado atualmente com o maior salário de cada depto
+select subd.depcod,subc.nome,subd.max_salario from (select *
+from (select empregado.codigo as empcod, depto.codigo as depcod
+	from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	join depto on deptoempregado.depto = depto.codigo
+	join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		group by 1) as tmp1
+		on tmp1.codigo = empregado.codigo
+		where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+	join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+		from empregado
+		join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			group by 1 order by 1) as tmp2
+			on tmp2.codigo = empregado.codigo
+			join cargo on cargoempregado.cargo = cargo.codigo
+			where cargoempregado.inicio = tmp2.inicio_cargo
+			order by 1 asc) as subb on suba.empcod = subb.codigo
+	join empregado on empregado.codigo = suba.empcod) as subc join (select subc.depcod, max(subc.salario) as max_salario
+	from (select *
+	from (select empregado.codigo as empcod, depto.codigo as depcod
+		from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		join depto on deptoempregado.depto = depto.codigo
+		join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+			group by 1) as tmp1
+			on tmp1.codigo = empregado.codigo
+			where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+		join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+			from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+				join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				group by 1 order by 1) as tmp2
+				on tmp2.codigo = empregado.codigo
+				join cargo on cargoempregado.cargo = cargo.codigo
+				where cargoempregado.inicio = tmp2.inicio_cargo
+				order by 1 asc) as subb on suba.empcod = subb.codigo
+		join empregado on empregado.codigo = suba.empcod) as subc
+	group by subc.depcod) as subd on subc.depcod = subd.depcod and subc.salario = subd.max_salario order by 1,2;
+
+-- mostrar a faixa do IRPF atual de cada empregado
+--Não sei calcular IRPF
+	 
+-- mostrar todos os cargos de um empregado
+select distinct empregado.nome, cargoempregado.cargo
+from cargoempregado
+join deptoempregado on deptoempregado.empregado = cargoempregado.empregado
+join empregado on empregado.codigo = cargoempregado.empregado
+join cargo on cargo.codigo = cargoempregado.cargo
+join depto on depto.codigo = deptoempregado.depto
+where empregado.codigo = 1;
+
+-- mostrar o salário médio de um empregado
+select distinct empregado.nome, avg(cargo.salario) as salario_médio
+from cargoempregado
+join deptoempregado on deptoempregado.empregado = cargoempregado.empregado
+join empregado on empregado.codigo = cargoempregado.empregado
+join cargo on cargo.codigo = cargoempregado.cargo
+join depto on depto.codigo = deptoempregado.depto
+where empregado.codigo = 1
+group by 1;
+	 
+-- mostrar o cargo mais alto atual de cada depto
+select subc.depcod,max(subc.cargo) from
+	(select *
+	from (select empregado.codigo as empcod, depto.codigo as depcod
+		from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		join depto on deptoempregado.depto = depto.codigo
+		join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+			group by 1) as tmp1
+			on tmp1.codigo = empregado.codigo
+			where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+		join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+			from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+				join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				group by 1 order by 1) as tmp2
+				on tmp2.codigo = empregado.codigo
+				join cargo on cargoempregado.cargo = cargo.codigo
+				where cargoempregado.inicio = tmp2.inicio_cargo
+				order by 1 asc) as subb on suba.empcod = subb.codigo
+		join empregado on empregado.codigo = suba.empcod) as subc
+		group by 1;
+	 
+-- mostrar a média de salário atual por gênero
+select subc.genero, avg(subc.salario) as salario_médio
+	from	(select *
+	from (select empregado.codigo as empcod, depto.codigo as depcod
+		from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		join depto on deptoempregado.depto = depto.codigo
+		join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+			group by 1) as tmp1
+			on tmp1.codigo = empregado.codigo
+			where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+		join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+			from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+				join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				group by 1 order by 1) as tmp2
+				on tmp2.codigo = empregado.codigo
+				join cargo on cargoempregado.cargo = cargo.codigo
+				where cargoempregado.inicio = tmp2.inicio_cargo
+				order by 1 asc) as subb on suba.empcod = subb.codigo
+		join empregado on empregado.codigo = suba.empcod) as subc group by 1;
+
+-- mostrar a média de salário atual por depto
+select subc.depcod, avg(subc.salario)
+	from	(select *
+	from (select empregado.codigo as empcod, depto.codigo as depcod
+		from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		join depto on deptoempregado.depto = depto.codigo
+		join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+			group by 1) as tmp1
+			on tmp1.codigo = empregado.codigo
+			where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+		join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+			from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+				join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				group by 1 order by 1) as tmp2
+				on tmp2.codigo = empregado.codigo
+				join cargo on cargoempregado.cargo = cargo.codigo
+				where cargoempregado.inicio = tmp2.inicio_cargo
+				order by 1 asc) as subb on suba.empcod = subb.codigo
+		join empregado on empregado.codigo = suba.empcod) as subc group by 1;
+
+-- mostrar o maior e o menor salário atual por gênero
+select subc.genero, max(subc.salario) as maior, min(subc.salario) as menor
+from	(select *
+from (select empregado.codigo as empcod, depto.codigo as depcod
+	from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	join depto on deptoempregado.depto = depto.codigo
+	join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		group by 1) as tmp1
+		on tmp1.codigo = empregado.codigo
+		where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+	join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+		from empregado
+		join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			group by 1 order by 1) as tmp2
+			on tmp2.codigo = empregado.codigo
+			join cargo on cargoempregado.cargo = cargo.codigo
+			where cargoempregado.inicio = tmp2.inicio_cargo
+			order by 1 asc) as subb on suba.empcod = subb.codigo
+	join empregado on empregado.codigo = suba.empcod) as subc
+	group by 1;
+
+-- mostrar o maior e o menor salário atual por depto
+select subc.depcod,max(subc.salario) as maior, min(subc.salario) as menor
+from (select *
+from (select empregado.codigo as empcod, depto.codigo as depcod
+	from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	join depto on deptoempregado.depto = depto.codigo
+	join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		group by 1) as tmp1
+		on tmp1.codigo = empregado.codigo
+		where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+	join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+		from empregado
+		join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			group by 1 order by 1) as tmp2
+			on tmp2.codigo = empregado.codigo
+			join cargo on cargoempregado.cargo = cargo.codigo
+			where cargoempregado.inicio = tmp2.inicio_cargo
+			order by 1 asc) as subb on suba.empcod = subb.codigo
+	join empregado on empregado.codigo = suba.empcod) as subc
+group by 1;
+
+-- mostrar o nome da mulher que recebe atualmente o maior salario
+select subc.nome, max(subc.salario)
+from (select *
+from (select empregado.codigo as empcod, depto.codigo as depcod
+	from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	join depto on deptoempregado.depto = depto.codigo
+	join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		group by 1) as tmp1
+		on tmp1.codigo = empregado.codigo
+		where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+	join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+		from empregado
+		join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			group by 1 order by 1) as tmp2
+			on tmp2.codigo = empregado.codigo
+			join cargo on cargoempregado.cargo = cargo.codigo
+			where cargoempregado.inicio = tmp2.inicio_cargo
+			order by 1 asc) as subb on suba.empcod = subb.codigo
+	join empregado on empregado.codigo = suba.empcod) as subc
+	where lower(subc.genero) = 'f' group by 1
+	having max(subc.salario) =
+	(select subc1.max from
+	(select subc.nome, max(subc.salario) as max
+	from (select *
+	from (select empregado.codigo as empcod, depto.codigo as depcod
+		from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		join depto on deptoempregado.depto = depto.codigo
+		join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+			group by 1) as tmp1
+			on tmp1.codigo = empregado.codigo
+			where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+		join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+			from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+				join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+				group by 1 order by 1) as tmp2
+				on tmp2.codigo = empregado.codigo
+				join cargo on cargoempregado.cargo = cargo.codigo
+				where cargoempregado.inicio = tmp2.inicio_cargo
+				order by 1 asc) as subb on suba.empcod = subb.codigo
+		join empregado on empregado.codigo = suba.empcod) as subc
+		where lower(subc.genero) = 'f' group by 1 order by 2 desc limit 1) subc1)
+
+-- mostrar o nome da mulher que recebe atualmente o maior salario por depto
+select subd.depcod,subc.nome,subd.max_salario
+from (select *
+from (select empregado.codigo as empcod, depto.codigo as depcod
+	from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	join depto on deptoempregado.depto = depto.codigo
+	join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	group by 1) as tmp1
+	on tmp1.codigo = empregado.codigo
+	where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+	join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+	from empregado
+	join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+	join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+	join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+	group by 1 order by 1) as tmp2
+	on tmp2.codigo = empregado.codigo
+	join cargo on cargoempregado.cargo = cargo.codigo
+	where cargoempregado.inicio = tmp2.inicio_cargo
+	order by 1 asc) as subb on suba.empcod = subb.codigo
+	join empregado on empregado.codigo = suba.empcod) as subc
+join (select subc.depcod, max(subc.salario) as max_salario
+	from (select *
+	from (select empregado.codigo as empcod, depto.codigo as depcod
+	from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	join depto on deptoempregado.depto = depto.codigo
+	join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	group by 1) as tmp1
+	on tmp1.codigo = empregado.codigo
+	where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+	join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+	from empregado
+	join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+	join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+	join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+	group by 1 order by 1) as tmp2
+	on tmp2.codigo = empregado.codigo
+	join cargo on cargoempregado.cargo = cargo.codigo
+	where cargoempregado.inicio = tmp2.inicio_cargo
+	order by 1 asc) as subb on suba.empcod = subb.codigo
+	join empregado on empregado.codigo = suba.empcod) as subc
+group by subc.depcod) as subd on subc.depcod = subd.depcod and subc.salario = subd.max_salario
+	where lower(subc.genero) = 'f' order by 1,2;
+	 
+-- mostrar o departamento com mais empregados atualmente
+select subc.depcod,count(*) as trabalham
+from (select *
+from (select empregado.codigo as empcod, depto.codigo as depcod
+	from empregado
+	join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+	join depto on deptoempregado.depto = depto.codigo
+	join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+		join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+		group by 1) as tmp1
+		on tmp1.codigo = empregado.codigo
+		where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+	join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+		from empregado
+		join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+			join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+			group by 1 order by 1) as tmp2
+			on tmp2.codigo = empregado.codigo
+			join cargo on cargoempregado.cargo = cargo.codigo
+			where cargoempregado.inicio = tmp2.inicio_cargo
+			order by 1 asc) as subb on suba.empcod = subb.codigo
+	join empregado on empregado.codigo = suba.empcod) as subc group by 1
+having count(*) =
+	(select subc1.trabalham from
+		(select subc.depcod,count(*) as trabalham
+		from (select *
+			from (select empregado.codigo as empcod, depto.codigo as depcod
+				from empregado
+				join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+				join depto on deptoempregado.depto = depto.codigo
+				join (select empregado.codigo, max(DEPTOEMPREGADO.INICIO) as inicio_cargo from empregado
+				join DEPTOEMPREGADO on empregado.codigo = deptoempregado.empregado
+				group by 1) as tmp1
+				on tmp1.codigo = empregado.codigo
+				where deptoempregado.inicio = tmp1.inicio_cargo) as suba
+				join (select empregado.codigo, cargoempregado.cargo, cargo.salario
+					from empregado
+					join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+					join (select empregado.codigo, max(CARGOEMPREGADO.INICIO) as inicio_cargo from empregado
+					join CARGOEMPREGADO on empregado.codigo = cargoempregado.empregado
+					group by 1 order by 1) as tmp2
+					on tmp2.codigo = empregado.codigo
+					join cargo on cargoempregado.cargo = cargo.codigo
+					where cargoempregado.inicio = tmp2.inicio_cargo
+					order by 1 asc) as subb on suba.empcod = subb.codigo
+					join empregado on empregado.codigo = suba.empcod) as subc group by 1 order by 2 desc limit 1) as subc1);
