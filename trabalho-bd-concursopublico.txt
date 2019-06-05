@@ -1,0 +1,42 @@
+concurso público
+	5 vagas para suporte técnico (nível técnico), cargo 1
+	3 vagas para programador (nível técnico), cargo 2
+	2 vagas para analista (nível superior), cargo 3
+	3 provas com questões de única escolha
+		português, 15 questões, peso 3
+		matemática e raciocínio lógico, 15 questões, peso 3
+		conhecimentos específicos, 20 questões, peso 6
+
+gabarito para as questões de cada prova
+	as provas de cada área, para todos os cargos, possuem o mesmo gabarito
+	A, B, ..., E
+
+candidatos
+	número de inscrição
+	cpf
+	nome
+	data de nascimento
+	cargo
+	respostas para as questões de cada prova (máquina de leitura de cartões)
+		A, B, ..., E, N (não sei), ' ' (em branco), X (nulo, erro de preenchimento)
+		igual ao gabarito, acerto
+		diferente do gabarito, erro
+		não sei, nem acerto nem erro
+	nota de cada prova
+		np = 10*(acertos-0.2*erros)/qtde_questoes
+		candidato não apto se np < 6
+	nota final
+		nf = (3*npor+3*nmat+6*nesp)/12
+	critérios de desempate para classificar os candidatos aptos
+		1) maior nota final
+		2) maior nota na prova de conhecimentos específicos
+		3) maior nota na prova de matemática e raciocínio lógico
+		4) menor idade
+		5) ordem de inscrição no concurso
+
+Modele, crie, popule e mostre:
+	a) a relação candidatos por vaga, por cargo
+	b) a lista dos candidatos aptos, por cargo
+	c) a lista dos candidatos que devem ser nomeados em cada vaga, por cargo, em ordem de classificação
+	d) a quantidade de vagas não preenchidas, por cargo
+
