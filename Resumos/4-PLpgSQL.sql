@@ -1,13 +1,25 @@
+createlang -l -U postgres -d biblioteca
+createlang -U postgres plpgsql biblioteca		  
+--criando ou substituindo uma função km2mi (km para milhas) (float; parametro real) retornando real
+-- select variavel 1 * 0.6
+--na linguagem 'sql'
+--chamando a função com valor 20
+-- \df S+ todas funções do banco
+-- \df retorna a que criou agora
 create or replace function km2mi (float) returns float as
 	'select $1 * 0.6'
 language 'sql';
 select km2mi(20);
 
+--função recebe data em NA e devolve em BR
+--$$ usado normalmente quando tem aspas na função, também é o marcador do corpo
+--depois de criada pode ser usada no meio de um select
 create or replace function ymd2dma_1 (timestamp) returns text as $$
 	select ltrim(to_char(date_part('day', $1), '00')) || '/' || ltrim(to_char(date_part('month', $1), '00')) || '/' || ltrim(to_char(date_part('year', $1), '0000'));
 $$ language 'sql';
 select ymd2dma_1(current_date);
-
+												 
+--mesma função mas usando begin																	 
 create or replace function ymd2dma_2 (timestamp) returns text as $$
 begin
 	return ltrim(to_char(date_part('day', $1), '00')) || '/' || ltrim(to_char(date_part('month', $1), '00')) || '/' || ltrim(to_char(date_part('year', $1), '0000'));
@@ -15,24 +27,30 @@ end;
 $$ language 'plpgsql';
 select ymd2dma_2(current_date);
 
+--valida cpf
+--declara variavel
 create or replace function validacpf(cpf char(11)) returns boolean as $$
 declare
 	d integer;
 	i integer;
 begin
+--verifica se tem tamanho 11
 	if (length(trim(cpf)) != 11) then
 		return false;
 	end if;
+--verifica se tem letra
 	for i in 1..11 loop
 		if ((substring(cpf, i, 1) < '0') or (substring(cpf, i, 1) > '9')) then
 			return false;
 		end if;
 	end loop;
+--se tem 11 digitos iguais
 	if ((cpf = '00000000000') or (cpf = '11111111111') or (cpf = '22222222222') or (cpf = '33333333333') or
 		(cpf = '44444444444') or (cpf = '55555555555') or (cpf = '66666666666') or (cpf = '77777777777') or
 		(cpf = '88888888888') or (cpf = '99999999999')) then
 		return false;
 	end if;
+--verifica os 9 anteriores do digito a
 	d := 0;
 	for i in reverse 9..1 loop
 		d := d + (11 - i) * (substring(cpf, i, 1)::integer);
@@ -44,6 +62,7 @@ begin
 	if (d != (substring(cpf, 10, 1)::integer)) then
 		return false;
 	end if;
+--verifica os 10 anteriores do digito b
 	d := 0;
 	for i in reverse 10..1 loop
 		d := d + (12 - i) * (substring(cpf, i, 1)::integer);
@@ -85,7 +104,20 @@ insert into funcionario values (5, 'Funcionario 5', 3, 6000);
 
 select max(salario) from funcionario where departamento = 1;
 
-create function calculamaiorsalario(codigo integer) returns real as $$
+						  
+--uma linha					  
+x integer
+x := count(*) from funcionario where departamento = 1;
+
+--varias linha
+r reord
+for r in select * from funcionario loop
+end loop;
+						  
+--equivalente a um SOP do java
+raise notice 'funcionario: %, %, %, %', r_funcionario.codigo, r_funcionario.nome, r_funcionario.departamento, r_funcionario.salario;
+						  
+create or replace function calculamaiorsalario(codigo integer) returns real as $$
 declare
 	r_funcionario record;
 	salario real;
@@ -103,7 +135,9 @@ $$ language 'plpgsql';
 select calculamaiorsalario(1);
 
 select departamento.nome, avg(salario) as salariomedio from departamento join funcionario on funcionario.departamento = departamento.codigo group by departamento.nome order by departamento.nome;
-
+--sempre que usar return next, usar o rowtype
+--a função devolve um set off, pra isso tem q usar um select * from função
+--explicar
 create type salariomedio as (departamento varchar(50), salariomedio real);
 create function calculasalariomedio() returns setof salariomedio as $$
 declare
@@ -135,12 +169,42 @@ select * from calculasalariomedio();
 
 Uma função de gatilho deve retornar nulo ou um registro possuindo a mesma estrutura da tabela para a qual foi disparado. Se um gatilho disparado BEFORE retornar nulo, não será executado o gatilho AFTER, e não ocorrerá o INSERT/UPDATE/DELETE para esta linha. Retornar um registro diferente de NEW altera a linha que será inserida ou atualizada (não tem efeito no DELETE). É possível substituir valores diretamente em NEW e retornar um NEW modificado. O retorno de um gatilho disparado AFTER é sempre ignorado.
 
+quem ganha o maior salario de um dado depto?		
+select funcionario.departamento, max(funcionario.salario) as maior from funcionario group by 1;						  
+						  
+select *,(select max(salario) from funcionario where funcionario. departamento = departamento.codigo) from departamento;
+
+create type salariodepto as (departamento as (departamento varchar(100), funcionario varchar (100));
+create or replace function maiorsalariopordepto() returns setof salariodepto as $$
+declare
+	r_departamento record;
+	maior real;
+	r_funcionario record;
+begin
+	for r_departamento in select * from departamento loop
+	for r_funcionario in select * from funcionario where departamento = r_departamento.codigon and 
+	salario = calculamaiorsalario(r_deprtamento.codigo) loop
+		r_salariodepto.departamento = r_departamento.nome
+		r_salariodepto.funcionario = r_funcionario.nome
+		return next r_salariodepto;
+		end loop;
+	end loop;
+	return;
+end;
+$$ language 'plpgsql';
+
+
+select * from funcionario join departamento on funcionario.departamento = departamento.codigo)as tmp1;
+
+select departamento.nome, funcionario.nome from funcionario join departamento on funcionario.departamento = departamento.codigo
+					      
+					      
 CREATE TABLE empregados (
    codigo  serial  PRIMARY KEY,
    nome    text,
    salario float
-);
-
+);										      
+											      
 CREATE TABLE empregados_auditoria (
    operacao     char(1)   NOT NULL,
    usuario      text      NOT NULL,
@@ -201,4 +265,8 @@ end;
 $$ language plpgsql;
 
 create trigger trigger_after after insert or update or delete on empregados for each row execute procedure trigger_after();
-
+	  
+			  
+						  
+						  
+						  
