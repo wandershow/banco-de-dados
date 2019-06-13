@@ -194,10 +194,10 @@ end;
 $$ language 'plpgsql';
 
 
-select * from funcionario join departamento on funcionario.departamento = departamento.codigo)as tmp1;
+Nome do funcionario que recebe maior salario por depto
 
 select departamento.nome, funcionario.nome from funcionario join departamento on funcionario.departamento = departamento.codigo
-					      
+where funcionario.salario = ( select max(salario) from funcionario where departamento = departamento.codigo);					      
 					      
 CREATE TABLE empregados (
    codigo  serial  PRIMARY KEY,
@@ -266,7 +266,99 @@ $$ language plpgsql;
 
 create trigger trigger_after after insert or update or delete on empregados for each row execute procedure trigger_after();
 	  
-			  
+--12/06/2019
+Função excluidepartamento (codigo integer)					      
+Função mostrapercentualgastossalariopordepartamento()
+											      
+create or replace function excluidepartamento(c integer) returns void as $$				      
+		delete from funconaro where departamento = c;
+		delete from departamento where codigo = c;
+$$ language 'sql';	      
+											      
+create or replace function mostrapercentualgastossalariopordepartamento() returns setof as $$				      
+with tmp as (
+	select funcionario.departamento, sum(salario) as total 
+	from funcionario 
+	group by 1)											      
+select funcionario.*, round((100*funcionario.salario/tmp.total)::numeric, 2) as perc
+from funcionario 
+	join tmp on funcionario.departamento = tmp.departamento;
+$$ language 'sql';											      
+
+			     
+			     
+create or replace function mostrapercentualgastossalariopordepartamento() returns setof xuxa as $$				      
+declare 
+r_funcionario record;
+total real;
+r_resposta xuxa%rowtype;
+begin
+for r_funcionario in select * from funcionario loop
+			     total := sum(salario) from funcionaio where departamento = r_funcionario.deparamento;
+			     r_resposta.codigo := r_funcionario.codigo;
+			     r_resposta.nome := r_funcionario.nome;
+			     r_resposta.departamento := r_funcionario.departamento;
+			     r_resposta.perc := r_funcionario.salario/total;
+			     return next r_resposta;
+end loop;
+return;
+end;
+$$ language 'plpgsql';											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
+											      
 						  
 						  
 						  
