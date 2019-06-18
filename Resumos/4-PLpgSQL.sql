@@ -266,7 +266,7 @@ $$ language plpgsql;
 
 create trigger trigger_after after insert or update or delete on empregados for each row execute procedure trigger_after();
 	  
---12/06/2019
+---------------------------------------------------------------------12/06/2019
 Função excluidepartamento (codigo integer)					      
 Função mostrapercentualgastossalariopordepartamento()
 											      
