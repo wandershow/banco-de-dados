@@ -27,4 +27,5 @@ jar: java compilado dentro de um zip
 
 eclipse: clica com direito no projeto>build path>configure build path>add external JARs, clica no arq drive jar
 
-
+conectar via jbc, nesse local/ip onde nome do banco é biblioteca 1, como usuario e com senha 12345
+"jdbc:postgresql://localhost/biblioteca1", "usuario",'12345"
