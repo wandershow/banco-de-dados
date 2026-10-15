@@ -1,6 +1,10 @@
-# BD
-Aulas de BD
+# Banco de Dados
 
-Repositório com matéria da disciplina Banco de Dados 
+Exercícios, resumos e anotações da disciplina de Banco de Dados (IFRS, 2019).
 
-Incluindo todo conteúdo visto na aula (Bancos, Resumos, Código usados) e comentários/anotações.
+## Conteúdo
+- Modelagem de dados
+- Consultas SQL, incluindo JOINs
+- PL/pgSQL (PostgreSQL)
+- Exercícios e avaliação
+- Resumos das aulas
